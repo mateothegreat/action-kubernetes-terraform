@@ -32,7 +32,7 @@ const core = __importStar(require("@actions/core"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const name = core.getInput('kubernetes_token');
+            const name = core.getInput('name');
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
@@ -41,6 +41,7 @@ function run() {
             core.info('asdfasdf');
             core.info('asdfasdf');
             core.info(name);
+            core.info('asdfaszxcvzxcvzxcvzxcdf');
             core.debug(`name = ${name} ${kubernetes_token} ${kubernetes_endpoint}`); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
             core.setOutput('time', new Date().toTimeString());
         }
