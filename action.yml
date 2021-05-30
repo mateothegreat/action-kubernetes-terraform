@@ -11,6 +11,20 @@ inputs:
   kubernetes_token:
     required: true
     description: "access token"
+  kunerbetes_image:
+    required: true
+    description: "docker image"
+  kubernetes_environment_variables:
+    required: true
+    description: "array of key value pairs"
+  terraform_backend_bucket:
+    required: true
+    description: "terraform backend bucket name"
+  terraform_backend_prefix:
+    required: true
+    description: "terraform backend prefix"
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  #  using: "node12"
+  #  main: "dist/index.js"
+  using: "docker"
+  image: Dockerfile
