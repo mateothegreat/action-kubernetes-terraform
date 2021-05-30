@@ -37,6 +37,10 @@ function run() {
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
             const args = [];
+            core.info('asdfasdf');
+            core.info('asdfasdf');
+            core.info('asdfasdf');
+            core.info(name);
             core.debug(`name = ${name} ${kubernetes_token} ${kubernetes_endpoint}`); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
             core.setOutput('time', new Date().toTimeString());
         }
