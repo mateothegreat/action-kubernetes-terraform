@@ -1,6 +1,6 @@
 FROM node:alpine
 
-RUN apk add --update wget jq unzip
+RUN apk add --update wget jq unzip curl
 
 RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
 RUN mv kubectl /bin/kubectl && chmod +x /bin/kubectl
