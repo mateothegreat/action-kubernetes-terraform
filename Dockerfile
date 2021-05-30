@@ -8,7 +8,7 @@ RUN mv kubectl /bin/kubectl && chmod +x /bin/kubectl
 RUN wget -q "https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip" && \
     unzip "./terraform_0.14.8_linux_amd64.zip" -d /usr/local/bin
 
-RUN npm install -g npm@latest
+RUN npm install -g npm@7.15.0
 RUN npm install typescript -g
 
 COPY . .
