@@ -25,7 +25,6 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            streamingplatform/action-deploy
             docker.pkg.github.com/streamingplatform/action-deploy/action-deploy
           # generate Docker tags based on the following events/attributes
           tags: |
