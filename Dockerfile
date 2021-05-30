@@ -14,5 +14,7 @@ COPY . .
 
 RUN npm install
 RUN npm run build
-
+RUN ls -la
+RUN ls -la /
+RUN ls -la dist
 ENTRYPOINT ["node", "dist/main.js"]
