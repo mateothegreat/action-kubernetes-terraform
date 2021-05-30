@@ -24,7 +24,7 @@ inputs:
     required: true
     description: "terraform backend prefix"
 runs:
-  #  using: "node12"
-  #  main: "dist/index.js"
-  using: "docker"
-  image: Dockerfile
+  using: "node12"
+  main: "dist/index.js"
+#  using: "docker"
+#  image: Dockerfile
