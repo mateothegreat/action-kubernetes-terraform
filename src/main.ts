@@ -18,6 +18,9 @@ async function run(): Promise<void> {
 
         console.log(await toolCache.extractZip(p, '/tmp'));
 
+
+        console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
+
         console.log(await exec.exec('/tmp/terraform', [
 
             'init',

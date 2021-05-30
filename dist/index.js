@@ -51,6 +51,7 @@ function run() {
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
             const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
             console.log(yield toolCache.extractZip(p, '/tmp'));
+            console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'init',
                 `-backend-config="credentials='${terraform_backend_credentials_path}'"`,
