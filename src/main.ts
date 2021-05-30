@@ -15,6 +15,7 @@ async function run(): Promise<void> {
         core.info('asdfasdf');
         core.info('asdfasdf');
         core.info(name);
+        core.info('asdfaszxcvzxcvzxcvzxcdf');
         core.debug(`name = ${ name } ${ kubernetes_token } ${ kubernetes_endpoint }`); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
 
         core.setOutput('time', new Date().toTimeString());
