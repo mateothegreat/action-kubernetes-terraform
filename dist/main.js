@@ -34,7 +34,7 @@ const exec = __importStar(require("@actions/exec"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const name = core.getInput('name');
+            const ref = core.getInput('ref');
             const terraform_backend_credentials_path = core.getInput('terraform_backend_credentials_path');
             const terraform_backend_bucket = core.getInput('terraform_backend_bucket');
             const terraform_backend_prefix = core.getInput('terraform_backend_prefix');
@@ -51,12 +51,7 @@ function run() {
             ]));
             console.log(yield exec.exec('/tmp/terraform', ['apply']));
             const args = [];
-            core.info('asdfasdf');
-            core.info('asdfasdf');
-            core.info('asdfasdf');
-            core.info(name);
-            core.info('asdfaszxcvzxcvzxcvzxcdf');
-            core.debug(`name = ${name} ${kubernetes_token} ${kubernetes_endpoint}`); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+            core.info(`ref: ${ref}`);
             core.setOutput('time', new Date().toTimeString());
         }
         catch (error) {

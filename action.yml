@@ -2,9 +2,9 @@ name: "Your name here"
 description: "Provide a description here"
 author: "Your name or organization here"
 inputs:
-  name:
+  ref:
     required: true
-    description: "service name"
+    description: "git branch or tag"
   kubernetes_endpoint:
     required: true
     description: "https url to api controller"
@@ -17,6 +17,9 @@ inputs:
   kubernetes_environment_variables:
     required: true
     description: "array of key value pairs"
+  terraform_backend_credentials_path:
+    required: true
+    description: "path to credentials file"
   terraform_backend_bucket:
     required: true
     description: "terraform backend bucket name"

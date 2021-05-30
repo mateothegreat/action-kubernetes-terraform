@@ -6,7 +6,7 @@ async function run(): Promise<void> {
 
     try {
 
-        const name: string = core.getInput('name');
+        const ref: string = core.getInput('ref');
         const terraform_backend_credentials_path: string = core.getInput('terraform_backend_credentials_path');
         const terraform_backend_bucket: string = core.getInput('terraform_backend_bucket');
         const terraform_backend_prefix: string = core.getInput('terraform_backend_prefix');
@@ -31,12 +31,7 @@ async function run(): Promise<void> {
         const args = [];
 
 
-        core.info('asdfasdf');
-        core.info('asdfasdf');
-        core.info('asdfasdf');
-        core.info(name);
-        core.info('asdfaszxcvzxcvzxcvzxcdf');
-        core.debug(`name = ${ name } ${ kubernetes_token } ${ kubernetes_endpoint }`); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+        core.info(`ref: ${ ref }`);
 
         core.setOutput('time', new Date().toTimeString());
     } catch (error) {
