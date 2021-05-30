@@ -2,10 +2,12 @@ name: 'build-test'
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
+
     branches:
       - main
       - 'releases/*'
-
+    tags:
+      - 'v*'
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
