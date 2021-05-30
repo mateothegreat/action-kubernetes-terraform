@@ -49,7 +49,7 @@ function run() {
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
-            const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip');
+            const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
             console.log(yield toolCache.extractZip(p, '/tmp'));
             console.log(yield exec.exec('/tmp/terraform', [
                 'init',

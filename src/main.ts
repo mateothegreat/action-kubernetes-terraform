@@ -14,7 +14,7 @@ async function run(): Promise<void> {
         const kubernetes_token: string = core.getInput('kubernetes_token');
         const kubernetes_environment_variables: string = core.getInput('kubernetes_environment_variables');
 
-        const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip');
+        const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
 
         console.log(await toolCache.extractZip(p, '/tmp'));
 
