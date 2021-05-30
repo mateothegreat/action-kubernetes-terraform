@@ -43,12 +43,20 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const name = core.getInput('name');
+            const terraform_backend_credentials_path = core.getInput('terraform_backend_credentials_path');
+            const terraform_backend_bucket = core.getInput('terraform_backend_bucket');
+            const terraform_backend_prefix = core.getInput('terraform_backend_prefix');
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
             const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip');
             console.log(yield toolCache.extractZip(p, '/tmp'));
-            console.log(yield exec.exec('/tmp/terraform', ['version']));
+            console.log(yield exec.exec('/tmp/terraform', [
+                'init',
+                `-backend-config="credentials=${terraform_backend_credentials_path}"`,
+                `-backend-config="bucket=${terraform_backend_bucket}"`,
+                `-backend-config="prefix=${terraform_backend_prefix}"`
+            ]));
             console.log(yield exec.exec('/tmp/terraform', ['apply']));
             const args = [];
             core.info('asdfasdf');
