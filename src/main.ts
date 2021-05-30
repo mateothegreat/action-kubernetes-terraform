@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 
 async function run(): Promise<void> {
     try {
-        const name: string = core.getInput('kubernetes_token');
+        const name: string = core.getInput('name');
         const kubernetes_endpoint: string = core.getInput('kubernetes_endpoint');
         const kubernetes_token: string = core.getInput('kubernetes_token');
         const kubernetes_environment_variables: string = core.getInput('kubernetes_environment_variables');
