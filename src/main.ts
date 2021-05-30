@@ -13,10 +13,10 @@ async function run(): Promise<void> {
 
         const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip');
 
-        console.log(await toolCache.extractZip(p, '/usr/local/bin'));
+        console.log(await toolCache.extractZip(p, '/tmp'));
 
-        console.log(await exec.exec('/usr/local/bin/terraform', [ 'version' ]));
-        console.log(await exec.exec('/usr/local/bin/terraform', [ 'apply' ]));
+        console.log(await exec.exec('/tmp/terraform', [ 'version' ]));
+        console.log(await exec.exec('/tmp/terraform', [ 'apply' ]));
 
         const args = [];
 
