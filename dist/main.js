@@ -45,9 +45,9 @@ function run() {
             console.log(yield toolCache.extractZip(p, '/tmp'));
             console.log(yield exec.exec('/tmp/terraform', [
                 'init',
-                `-backend-config="credentials=${terraform_backend_credentials_path}"`,
-                `-backend-config="bucket=${terraform_backend_bucket}"`,
-                `-backend-config="prefix=${terraform_backend_prefix}"`
+                `-backend-config="credentials='${terraform_backend_credentials_path}'"`,
+                `-backend-config="bucket='${terraform_backend_bucket}'"`,
+                `-backend-config="prefix='${terraform_backend_prefix}"'`
             ]));
             console.log(yield exec.exec('/tmp/terraform', ['apply']));
             const args = [];
