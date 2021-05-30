@@ -1,12 +1,22 @@
 import * as core from '@actions/core';
+import * as toolCache from '@actions/tool-cache';
+import * as exec from '@actions/exec';
 
 async function run(): Promise<void> {
+
     try {
+
         const name: string = core.getInput('name');
         const kubernetes_endpoint: string = core.getInput('kubernetes_endpoint');
         const kubernetes_token: string = core.getInput('kubernetes_token');
         const kubernetes_environment_variables: string = core.getInput('kubernetes_environment_variables');
 
+        const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.9_linux_amd64.zip');
+
+        console.log(await toolCache.extractZip(p, '/usr/local/bin'));
+
+        console.log(await exec.exec('/usr/local/bin/terraform', [ 'version' ]));
+        console.log(await exec.exec('/usr/local/bin/terraform', [ 'apply' ]));
 
         const args = [];
 

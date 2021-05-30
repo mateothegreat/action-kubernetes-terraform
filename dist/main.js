@@ -29,6 +29,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
+const toolCache = __importStar(require("@actions/tool-cache"));
+const exec = __importStar(require("@actions/exec"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -36,6 +38,10 @@ function run() {
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_environment_variables = core.getInput('kubernetes_environment_variables');
+            const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.9_linux_amd64.zip');
+            console.log(yield toolCache.extractZip(p, '/usr/local/bin'));
+            console.log(yield exec.exec('/usr/local/bin/terraform', ['version']));
+            console.log(yield exec.exec('/usr/local/bin/terraform', ['apply']));
             const args = [];
             core.info('asdfasdf');
             core.info('asdfasdf');
