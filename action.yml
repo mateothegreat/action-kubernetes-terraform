@@ -17,9 +17,9 @@ inputs:
   kubernetes_environment_variables:
     required: true
     description: "array of key value pairs"
-  terraform_backend_credentials_path:
+  terraform_backend_credentials:
     required: true
-    description: "path to credentials file"
+    description: "credentials file"
   terraform_backend_bucket:
     required: true
     description: "terraform backend bucket name"

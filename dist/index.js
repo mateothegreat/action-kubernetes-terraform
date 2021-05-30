@@ -43,7 +43,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const ref = core.getInput('ref');
-            const terraform_backend_credentials_path = core.getInput('terraform_backend_credentials_path');
+            const terraform_backend_credentials = core.getInput('terraform_backend_credentials');
             const terraform_backend_bucket = core.getInput('terraform_backend_bucket');
             const terraform_backend_prefix = core.getInput('terraform_backend_prefix');
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
@@ -54,7 +54,7 @@ function run() {
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'init',
-                `-backend-config="credentials='${terraform_backend_credentials_path}'"`,
+                `-backend-config="credentials='${terraform_backend_credentials}'"`,
                 `-backend-config="bucket='${terraform_backend_bucket}'"`,
                 `-backend-config="prefix='${terraform_backend_prefix}'"`
             ]));

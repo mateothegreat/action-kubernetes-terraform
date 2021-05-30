@@ -7,7 +7,7 @@ async function run(): Promise<void> {
     try {
 
         const ref: string = core.getInput('ref');
-        const terraform_backend_credentials_path: string = core.getInput('terraform_backend_credentials_path');
+        const terraform_backend_credentials: string = core.getInput('terraform_backend_credentials');
         const terraform_backend_bucket: string = core.getInput('terraform_backend_bucket');
         const terraform_backend_prefix: string = core.getInput('terraform_backend_prefix');
         const kubernetes_endpoint: string = core.getInput('kubernetes_endpoint');
@@ -24,7 +24,7 @@ async function run(): Promise<void> {
         console.log(await exec.exec('/tmp/terraform', [
 
             'init',
-            `-backend-config="credentials='${ terraform_backend_credentials_path }'"`,
+            `-backend-config="credentials='${ terraform_backend_credentials }'"`,
             `-backend-config="bucket='${ terraform_backend_bucket }'"`,
             `-backend-config="prefix='${ terraform_backend_prefix }'"`
 
