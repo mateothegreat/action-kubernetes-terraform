@@ -11,7 +11,17 @@ test('throws invalid number', async () => {
 test('test runs', () => {
 
     process.env[ 'INPUT_MILLISECONDS' ] = '500';
+    process.env[ 'KUBERNETES_ENVIRONMENT_VARIABLES' ] = JSON.stringify([
 
+        {
+
+            a: 1
+
+        }, {
+
+            b: 'bar'
+        }
+    ]);
     const np = process.execPath;
     const ip = path.join(__dirname, '..', 'lib', 'main.js');
     const options: cp.ExecFileSyncOptions = {
@@ -19,5 +29,5 @@ test('test runs', () => {
     };
 
     console.log(cp.execFileSync(np, [ ip ], options).toString());
-    
+
 });
