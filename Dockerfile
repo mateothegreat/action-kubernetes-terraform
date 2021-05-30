@@ -9,6 +9,7 @@ RUN wget "https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux
     unzip "./terraform_0.14.8_linux_amd64.zip" -d /usr/local/bin
 
 COPY src .
+COPY package.json .
 
 RUN npm run build
 
