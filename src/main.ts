@@ -56,8 +56,6 @@ async function run(): Promise<void> {
 
         while (retries <= maxRetries) {
 
-            retries++;
-
             try {
 
                 await exec.exec('/tmp/terraform', [
@@ -88,6 +86,8 @@ async function run(): Promise<void> {
                 console.log(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
 
                 await wait(5000);
+
+                retries++;
 
             }
 

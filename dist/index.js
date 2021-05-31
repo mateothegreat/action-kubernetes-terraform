@@ -70,7 +70,6 @@ function run() {
             let retries = 1;
             let failed = false;
             while (retries <= maxRetries) {
-                retries++;
                 try {
                     yield exec.exec('/tmp/terraform', [
                         'apply',
@@ -90,6 +89,7 @@ function run() {
                     failed = true;
                     console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
                     yield utilities_1.wait(5000);
+                    retries++;
                 }
             }
             if (!failed) {
