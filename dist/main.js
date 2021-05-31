@@ -27,10 +27,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const toolCache = __importStar(require("@actions/tool-cache"));
 const exec = __importStar(require("@actions/exec"));
+const chalk_1 = __importDefault(require("chalk"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -49,9 +53,10 @@ function run() {
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
             console.log(version);
             console.log(dockerTag);
-            core.info('\u001b[43mThis background will be yellow');
-            console.log('\u001b[43mThis asdf will be yellow');
-            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '-p', '"$service_account_key"', 'https://gcr.io']));
+            console.log(JSON.stringify(core.getInput('service_account_key')));
+            core.info(`Deploying version "${chalk_1.default.green(version)}`);
+            console.log(`Deploying version "${chalk_1.default.green(version)}`);
+            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '-p', JSON.stringify(core.getInput('service_account_key')), 'https://gcr.io']));
             console.log(yield exec.exec('docker', ['build', '-t', dockerTag]));
             console.log(yield exec.exec('docker', ['push', dockerTag]));
             yield toolCache.extractZip(p, '/tmp');
