@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
 import * as toolCache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
-import chalk from 'chalk';
 
 async function run(): Promise<void> {
 
@@ -24,14 +23,14 @@ async function run(): Promise<void> {
         const version = matches[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
-        console.log(version);
-        console.log(dockerTag);
-        console.log(new Buffer(JSON.stringify(core.getInput('service_account_key'))).toString('base64'));
 
-        core.info(`Deploying version "${ chalk.redBright(version) }`);
-        console.log(`Deploying version "${ chalk.red(version) }`);
+        console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
-        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '-p', JSON.stringify(core.getInput('service_account_key')), 'https://gcr.io' ]));
+        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
+
+            input: new Buffer(core.getInput('service_account_key'))
+
+        }));
 
         console.log(await exec.exec('docker', [ 'build', '-t', dockerTag ]));
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));

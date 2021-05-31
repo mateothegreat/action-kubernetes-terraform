@@ -27,14 +27,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const toolCache = __importStar(require("@actions/tool-cache"));
 const exec = __importStar(require("@actions/exec"));
-const chalk_1 = __importDefault(require("chalk"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -51,12 +47,10 @@ function run() {
             const version = matches[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
-            console.log(version);
-            console.log(dockerTag);
-            console.log(new Buffer(JSON.stringify(core.getInput('service_account_key'))).toString('base64'));
-            core.info(`Deploying version "${chalk_1.default.redBright(version)}`);
-            console.log(`Deploying version "${chalk_1.default.red(version)}`);
-            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '-p', JSON.stringify(core.getInput('service_account_key')), 'https://gcr.io']));
+            console.log(`Deploying version "${version}" (${dockerTag})..`);
+            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
+                input: new Buffer(core.getInput('service_account_key'))
+            }));
             console.log(yield exec.exec('docker', ['build', '-t', dockerTag]));
             console.log(yield exec.exec('docker', ['push', dockerTag]));
             yield toolCache.extractZip(p, '/tmp');
