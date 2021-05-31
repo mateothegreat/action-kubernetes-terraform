@@ -40,12 +40,13 @@ const core = __importStar(__webpack_require__(186));
 const toolCache = __importStar(__webpack_require__(784));
 const exec = __importStar(__webpack_require__(514));
 const fs = __importStar(__webpack_require__(747));
+const utilities_1 = __webpack_require__(621);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
-            const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
+            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}:${version}`;
             if (core.getInput('npm_token')) {
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
             }
@@ -65,8 +66,10 @@ function run() {
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
             });
-            let retries = 0;
-            while (retries < parseInt(core.getInput('terraform_retries'))) {
+            const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
+            let retries = 1;
+            let failed = false;
+            while (retries <= maxRetries) {
                 retries++;
                 try {
                     yield exec.exec('/tmp/terraform', [
@@ -80,12 +83,20 @@ function run() {
                             GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                         }
                     });
+                    failed = false;
                 }
                 catch (err) {
-                    console.log(`** terraform apply failed! retrying (attempt #${retries})..`);
+                    failed = true;
+                    console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
+                    yield utilities_1.wait(5000);
                 }
             }
-            console.log(`Deploy completed in ${retries} retries.`);
+            if (!failed) {
+                console.log(`Deploy completed in ${retries} retries.`);
+            }
+            else {
+                core.setFailed(`terraform apply failed after ${retries} retries!`);
+            }
         }
         catch (error) {
             core.setFailed(error.message);
@@ -93,6 +104,32 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 621:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.wait = void 0;
+function wait(ms) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((r) => setTimeout(r, ms));
+    });
+}
+exports.wait = wait;
 
 
 /***/ }),

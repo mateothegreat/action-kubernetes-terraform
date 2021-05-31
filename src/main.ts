@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import * as toolCache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
+import { wait } from './utilities';
 
 async function run(): Promise<void> {
 
@@ -9,7 +10,7 @@ async function run(): Promise<void> {
 
         const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
-        const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
+        const dockerTag = `${ core.getInput('docker_image_base', { required: true }) }/${ repositoryName }:${ version }`;
 
         if (core.getInput('npm_token')) {
 
@@ -48,9 +49,12 @@ async function run(): Promise<void> {
 
         });
 
-        let retries = 0;
+        const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
 
-        while (retries < parseInt(core.getInput('terraform_retries'))) {
+        let retries = 1;
+        let failed = false;
+
+        while (retries <= maxRetries) {
 
             retries++;
 
@@ -74,15 +78,29 @@ async function run(): Promise<void> {
 
                 });
 
+                failed = false;
+
             } catch (err) {
 
-                console.log(`** terraform apply failed! retrying (attempt #${ retries })..`);
+                failed = true;
+
+                console.log(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
+
+                await wait(5000);
 
             }
 
         }
 
-        console.log(`Deploy completed in ${ retries } retries.`);
+        if (!failed) {
+
+            console.log(`Deploy completed in ${ retries } retries.`);
+
+        } else {
+
+            core.setFailed(`terraform apply failed after ${ retries } retries!`);
+
+        }
 
     } catch (error) {
 

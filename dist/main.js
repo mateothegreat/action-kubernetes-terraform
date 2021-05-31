@@ -32,12 +32,13 @@ const core = __importStar(require("@actions/core"));
 const toolCache = __importStar(require("@actions/tool-cache"));
 const exec = __importStar(require("@actions/exec"));
 const fs = __importStar(require("fs"));
+const utilities_1 = require("./utilities");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
-            const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
+            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}:${version}`;
             if (core.getInput('npm_token')) {
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
             }
@@ -57,8 +58,10 @@ function run() {
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
             });
-            let retries = 0;
-            while (retries < parseInt(core.getInput('terraform_retries'))) {
+            const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
+            let retries = 1;
+            let failed = false;
+            while (retries <= maxRetries) {
                 retries++;
                 try {
                     yield exec.exec('/tmp/terraform', [
@@ -72,12 +75,20 @@ function run() {
                             GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                         }
                     });
+                    failed = false;
                 }
                 catch (err) {
-                    console.log(`** terraform apply failed! retrying (attempt #${retries})..`);
+                    failed = true;
+                    console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
+                    yield utilities_1.wait(5000);
                 }
             }
-            console.log(`Deploy completed in ${retries} retries.`);
+            if (!failed) {
+                console.log(`Deploy completed in ${retries} retries.`);
+            }
+            else {
+                core.setFailed(`terraform apply failed after ${retries} retries!`);
+            }
         }
         catch (error) {
             core.setFailed(error.message);
