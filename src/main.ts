@@ -18,6 +18,8 @@ async function run(): Promise<void> {
 
         console.log(await toolCache.extractZip(p, '/tmp'));
 
+        console.log(await exec.exec('pwd'));
+        console.log(await exec.exec('ls -lah'));
 
         console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
 
