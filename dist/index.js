@@ -51,7 +51,11 @@ function run() {
             const kubernetes_image = core.getInput('kubernetes_image');
             const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
             console.log(process.env);
-            console.log(yield exec.exec('env'));
+            const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
+            console.log(matches);
+            const version = matches[2];
+            console.log(version);
+            // console.log(await exec.exec('env'));
             console.log(yield toolCache.extractZip(p, '/tmp'));
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
