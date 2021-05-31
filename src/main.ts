@@ -16,6 +16,10 @@ async function run(): Promise<void> {
 
         const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
 
+        console.log(process.env);
+        
+        console.log(await exec.exec('env'));
+
         console.log(await toolCache.extractZip(p, '/tmp'));
 
         console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
@@ -33,10 +37,12 @@ async function run(): Promise<void> {
 
         core.info(`ref: ${ ref }`);
 
-        core.setOutput('time', new Date().toTimeString());
     } catch (error) {
+
         core.setFailed(error.message);
+
     }
+
 }
 
 run();
