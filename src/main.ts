@@ -30,10 +30,15 @@ async function run(): Promise<void> {
 
         console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ], {
 
-            cwd: '..'
+            cwd: '/home/runner/work/frontend-app'
 
         }));
-        
+
+        console.log(await exec.exec('ls -la'));
+        console.log(await exec.exec('ls -la /home/runner/work/frontend-app/'));
+        console.log(await exec.exec('ls -la /home/runner/work/'));
+        console.log(await exec.exec('ls -la /home/runner/'));
+
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));
 
         await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
