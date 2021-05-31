@@ -26,10 +26,10 @@ async function run(): Promise<void> {
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
         console.log(version);
         console.log(dockerTag);
-        console.log(JSON.stringify(core.getInput('service_account_key')));
+        console.log(new Buffer(JSON.stringify(core.getInput('service_account_key'))).toString('base64'));
 
-        core.info(`Deploying version "${ chalk.green(version) }`);
-        console.log(`Deploying version "${ chalk.green(version) }`);
+        core.info(`Deploying version "${ chalk.redBright(version) }`);
+        console.log(`Deploying version "${ chalk.red(version) }`);
 
         console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '-p', JSON.stringify(core.getInput('service_account_key')), 'https://gcr.io' ]));
 
