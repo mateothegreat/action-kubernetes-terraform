@@ -62,20 +62,19 @@ function run() {
                 fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
                 yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json']);
             }
-            console.log();
             console.log(`Deploying version "${version}" (${dockerTag})..`);
-            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
+            yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
-            }));
-            console.log(yield exec.exec('docker', ['build', '-t', dockerTag, '.']));
-            console.log(yield exec.exec('docker', ['push', dockerTag]));
+            });
+            yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
+            yield exec.exec('docker', ['push', dockerTag]);
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
-            console.log(yield exec.exec('/tmp/terraform', ['init'], {
+            yield exec.exec('/tmp/terraform', ['init'], {
                 env: {
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
-            }));
-            console.log(yield exec.exec('/tmp/terraform', [
+            });
+            yield exec.exec('/tmp/terraform', [
                 'apply',
                 '-auto-approve',
                 `-var=host=${core.getInput('kubernetes_endpoint')}`,
@@ -85,7 +84,7 @@ function run() {
                 env: {
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
-            }));
+            });
         }
         catch (error) {
             core.setFailed(error.message);

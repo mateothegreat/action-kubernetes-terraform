@@ -38,23 +38,20 @@ async function run(): Promise<void> {
 
         }
 
-        console.log();
-
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
-        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
+        await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
 
             input: Buffer.from(core.getInput('storage_account_key'))
 
-        }));
+        });
 
-        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]));
-
-        console.log(await exec.exec('docker', [ 'push', dockerTag ]));
+        await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
+        await exec.exec('docker', [ 'push', dockerTag ]);
 
         await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
-        console.log(await exec.exec('/tmp/terraform', [ 'init' ], {
+        await exec.exec('/tmp/terraform', [ 'init' ], {
 
             env: {
 
@@ -62,9 +59,9 @@ async function run(): Promise<void> {
 
             }
 
-        }));
+        });
 
-        console.log(await exec.exec('/tmp/terraform', [
+        await exec.exec('/tmp/terraform', [
 
             'apply',
             '-auto-approve',
@@ -80,7 +77,7 @@ async function run(): Promise<void> {
 
             }
 
-        }));
+        });
 
     } catch (error) {
 
