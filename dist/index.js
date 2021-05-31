@@ -57,10 +57,9 @@ function run() {
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('service_account_key'))
             }));
-            console.log(process.env);
-            console.log(yield exec.exec('ls -la'));
-            console.log(yield exec.exec('pwd'));
-            console.log(yield exec.exec('docker', ['build', '-t', dockerTag, '.']));
+            console.log(yield exec.exec('docker', ['build', '-t', dockerTag, '.'], {
+                cwd: '..'
+            }));
             console.log(yield exec.exec('docker', ['push', dockerTag]));
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
             console.log(yield exec.exec('/tmp/terraform', ['init']));
