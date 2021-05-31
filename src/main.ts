@@ -50,7 +50,7 @@ async function run(): Promise<void> {
 
         let retries = 0;
 
-        while (true) {
+        while (retries < parseInt(core.getInput('terraform_retries'))) {
 
             retries++;
 
@@ -76,7 +76,7 @@ async function run(): Promise<void> {
 
             } catch (err) {
 
-                console.log('** terraform apply failed! retrying..');
+                console.log(`** terraform apply failed! retrying (attempt #${ retries })..`);
 
             }
 

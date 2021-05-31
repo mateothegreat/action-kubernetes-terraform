@@ -66,7 +66,7 @@ function run() {
                 }
             });
             let retries = 0;
-            while (true) {
+            while (retries < parseInt(core.getInput('terraform_retries'))) {
                 retries++;
                 try {
                     yield exec.exec('/tmp/terraform', [
@@ -82,7 +82,7 @@ function run() {
                     });
                 }
                 catch (err) {
-                    console.log('** terraform apply failed! retrying..');
+                    console.log(`** terraform apply failed! retrying (attempt #${retries})..`);
                 }
             }
             console.log(`Deploy completed in ${retries} retries.`);
