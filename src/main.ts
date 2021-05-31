@@ -23,10 +23,22 @@ async function run(): Promise<void> {
 
         console.log(await exec.exec('id'));
 
-        fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
-        fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
 
-        console.log(await exec.exec('gcloud', [ 'auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json' ]));
+        if (core.getInput('npm_token')) {
+
+            fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
+
+        }
+
+        if (core.getInput('service_account_key')) {
+
+            fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
+
+            await exec.exec('gcloud', [ 'auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json' ]);
+
+        }
+
+        console.log();
 
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
@@ -42,7 +54,15 @@ async function run(): Promise<void> {
 
         await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
-        console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
+        console.log(await exec.exec('/tmp/terraform', [ 'init' ], {
+
+            env: {
+
+                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+
+            }
+            
+        }));
 
         console.log(await exec.exec('/tmp/terraform', [
 
