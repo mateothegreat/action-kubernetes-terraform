@@ -61,18 +61,26 @@ async function run(): Promise<void> {
                 GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
 
             }
-            
+
         }));
 
         console.log(await exec.exec('/tmp/terraform', [
 
             'apply',
             '-auto-approve',
-            `-var=host=${ kubernetes_endpoint }`,
-            `-var=token=${ kubernetes_token }`,
-            `-var=image=${ kubernetes_image }`
+            `-var=host=${ core.getInput('kubernetes_endpoint') }`,
+            `-var=token=${ core.getInput('kubernetes_token') }`,
+            `-var=image=${ core.getInput('kubernetes_image') }`
 
-        ]));
+        ], {
+
+            env: {
+
+                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+
+            }
+
+        }));
 
     } catch (error) {
 
