@@ -22,8 +22,8 @@ async function run(): Promise<void> {
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
 
         console.log(await exec.exec('id'));
-        
-        fs.writeFileSync('~/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`);
+
+        fs.writeFileSync('~/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
