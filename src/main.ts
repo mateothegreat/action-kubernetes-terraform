@@ -6,7 +6,8 @@ async function run(): Promise<void> {
 
     try {
 
-        const ref: string = core.getInput('ref');
+        const docker_image_base: string = core.getInput('docker_image_base');
+
         const terraform_backend_credentials: string = core.getInput('terraform_backend_credentials');
         const terraform_backend_bucket: string = core.getInput('terraform_backend_bucket');
         const terraform_backend_prefix: string = core.getInput('terraform_backend_prefix');
@@ -19,15 +20,21 @@ async function run(): Promise<void> {
         console.log(process.env);
 
         const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
-
-        console.log(matches);
-
         const version = matches[ 2 ];
-
+        const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
+        const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
         console.log(version);
-        // console.log(await exec.exec('env'));
+        console.log(dockerTag);
 
-        console.log(await toolCache.extractZip(p, '/tmp'));
+        core.info('\u001b[43mThis background will be yellow');
+        console.log('\u001b[43mThis asdf will be yellow');
+
+        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '-p', '"$service_account_key"', 'https://gcr.io' ]));
+
+        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag ]));
+        console.log(await exec.exec('docker', [ 'push', dockerTag ]));
+
+        await toolCache.extractZip(p, '/tmp');
 
         console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
 
