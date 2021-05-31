@@ -48,9 +48,6 @@ async function run(): Promise<void> {
 
         ]));
 
-
-        core.info(`ref: ${ ref }`);
-
     } catch (error) {
 
         core.setFailed(error.message);

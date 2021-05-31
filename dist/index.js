@@ -42,7 +42,7 @@ const exec = __importStar(__webpack_require__(514));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const ref = core.getInput('ref');
+            const docker_image_base = core.getInput('docker_image_base');
             const terraform_backend_credentials = core.getInput('terraform_backend_credentials');
             const terraform_backend_bucket = core.getInput('terraform_backend_bucket');
             const terraform_backend_prefix = core.getInput('terraform_backend_prefix');
@@ -52,11 +52,17 @@ function run() {
             const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
             console.log(process.env);
             const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
-            console.log(matches);
             const version = matches[2];
+            const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
+            const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
             console.log(version);
-            // console.log(await exec.exec('env'));
-            console.log(yield toolCache.extractZip(p, '/tmp'));
+            console.log(dockerTag);
+            core.info('\u001b[43mThis background will be yellow');
+            console.log('\u001b[43mThis asdf will be yellow');
+            console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '-p', '"$service_account_key"', 'https://gcr.io']));
+            console.log(yield exec.exec('docker', ['build', '-t', dockerTag]));
+            console.log(yield exec.exec('docker', ['push', dockerTag]));
+            yield toolCache.extractZip(p, '/tmp');
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'apply',
@@ -65,7 +71,6 @@ function run() {
                 `-var=token=${kubernetes_token}`,
                 `-var=image=${kubernetes_image}`
             ]));
-            core.info(`ref: ${ref}`);
         }
         catch (error) {
             core.setFailed(error.message);
