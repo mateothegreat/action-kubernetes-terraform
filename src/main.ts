@@ -29,7 +29,7 @@ async function run(): Promise<void> {
 
         console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
 
-            input: Buffer.from(core.getInput('service_account_key'))
+            input: Buffer.from(core.getInput('storage_account_key'))
 
         }));
 
