@@ -31,6 +31,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const toolCache = __importStar(require("@actions/tool-cache"));
 const exec = __importStar(require("@actions/exec"));
+const fs = __importStar(require("fs"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -45,6 +46,7 @@ function run() {
             const version = matches[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
+            fs.writeFileSync('/root/.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`);
             console.log(`Deploying version "${version}" (${dockerTag})..`);
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('service_account_key'))

@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as toolCache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
+import * as fs from 'fs';
 
 async function run(): Promise<void> {
 
@@ -19,6 +20,8 @@ async function run(): Promise<void> {
         const version = matches[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
+
+        fs.writeFileSync('/root/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`);
 
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
