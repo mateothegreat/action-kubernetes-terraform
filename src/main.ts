@@ -24,7 +24,7 @@ async function run(): Promise<void> {
         console.log(await exec.exec('/tmp/terraform', [
 
             'init',
-            `-backend-config="credentials='${ terraform_backend_credentials }'"`,
+            `-backend-config="credentials='${ JSON.stringify(terraform_backend_credentials) }'"`,
             `-backend-config="bucket='${ terraform_backend_bucket }'"`,
             `-backend-config="prefix='${ terraform_backend_prefix }'"`
 

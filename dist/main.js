@@ -46,7 +46,7 @@ function run() {
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'init',
-                `-backend-config="credentials='${terraform_backend_credentials}'"`,
+                `-backend-config="credentials='${JSON.stringify(terraform_backend_credentials)}'"`,
                 `-backend-config="bucket='${terraform_backend_bucket}'"`,
                 `-backend-config="prefix='${terraform_backend_prefix}'"`
             ]));
