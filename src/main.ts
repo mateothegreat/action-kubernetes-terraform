@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as toolCache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
+import chalk from 'chalk';
 
 async function run(): Promise<void> {
 
@@ -26,10 +27,9 @@ async function run(): Promise<void> {
         console.log(version);
         console.log(dockerTag);
 
-        core.info('\u001b[43mThis background will be yellow');
-        console.log('\u001b[43mThis asdf will be yellow');
+        core.info(`Deploying version "${ chalk.green(version) }`);
 
-        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '-p', '"$service_account_key"', 'https://gcr.io' ]));
+        console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '-p', JSON.stringify(core.getInput('service_account_key')), 'https://gcr.io' ]));
 
         console.log(await exec.exec('docker', [ 'build', '-t', dockerTag ]));
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));
