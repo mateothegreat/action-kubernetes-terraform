@@ -12,28 +12,22 @@ async function run(): Promise<void> {
         const terraform_backend_prefix: string = core.getInput('terraform_backend_prefix');
         const kubernetes_endpoint: string = core.getInput('kubernetes_endpoint');
         const kubernetes_token: string = core.getInput('kubernetes_token');
-        const kubernetes_environment_variables: string = core.getInput('kubernetes_environment_variables');
+        const kubernetes_image: string = core.getInput('kubernetes_image');
 
         const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
 
         console.log(await toolCache.extractZip(p, '/tmp'));
 
-        console.log(await exec.exec('pwd'));
-        console.log(await exec.exec('ls -lah'));
-
         console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
 
         console.log(await exec.exec('/tmp/terraform', [
 
-            'init',
-            `-backend-config="credentials='${ JSON.stringify(terraform_backend_credentials) }'"`,
-            `-backend-config="bucket='${ terraform_backend_bucket }'"`,
-            `-backend-config="prefix='${ terraform_backend_prefix }'"`
+            'apply',
+            `-var host=${ kubernetes_endpoint }`,
+            `-var token=${ kubernetes_token }`,
+            `-var image=${ kubernetes_image }`
 
         ]));
-        console.log(await exec.exec('/tmp/terraform', [ 'apply' ]));
-
-        const args = [];
 
 
         core.info(`ref: ${ ref }`);
