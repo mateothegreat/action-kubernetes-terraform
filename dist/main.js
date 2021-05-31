@@ -48,6 +48,8 @@ function run() {
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
             console.log(yield exec.exec('id'));
             fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
+            fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
+            console.log(yield exec.exec('gcloud', ['auth', 'activate-service-account', 'default', '--key-file', '/tmp/tfkey.json']));
             console.log(`Deploying version "${version}" (${dockerTag})..`);
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
