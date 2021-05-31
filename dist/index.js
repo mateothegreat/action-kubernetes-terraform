@@ -54,9 +54,10 @@ function run() {
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'apply',
-                `-var="host=${kubernetes_endpoint}"`,
-                `-var="token=${kubernetes_token}"`,
-                `-var="image=${kubernetes_image}"`
+                '-auto-approve',
+                `-var=host=${kubernetes_endpoint}`,
+                `-var=token=${kubernetes_token}`,
+                `-var=image=${kubernetes_image}`
             ]));
             core.info(`ref: ${ref}`);
             core.setOutput('time', new Date().toTimeString());

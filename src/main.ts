@@ -23,9 +23,10 @@ async function run(): Promise<void> {
         console.log(await exec.exec('/tmp/terraform', [
 
             'apply',
-            `-var="host=${ kubernetes_endpoint }"`,
-            `-var="token=${ kubernetes_token }"`,
-            `-var="image=${ kubernetes_image }"`
+            '-auto-approve',
+            `-var=host=${ kubernetes_endpoint }`,
+            `-var=token=${ kubernetes_token }`,
+            `-var=image=${ kubernetes_image }`
 
         ]));
 
