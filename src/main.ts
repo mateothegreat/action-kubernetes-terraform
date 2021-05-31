@@ -15,10 +15,6 @@ async function run(): Promise<void> {
         const kubernetes_token: string = core.getInput('kubernetes_token');
         const kubernetes_image: string = core.getInput('kubernetes_image');
 
-        const p = await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
-
-        console.log(process.env);
-
         const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
         const version = matches[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
@@ -32,10 +28,10 @@ async function run(): Promise<void> {
 
         }));
 
-        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag ]));
+        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]));
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));
 
-        await toolCache.extractZip(p, '/tmp');
+        await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
         console.log(await exec.exec('/tmp/terraform', [ 'init' ]));
 

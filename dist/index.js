@@ -49,8 +49,6 @@ function run() {
             const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
             const kubernetes_token = core.getInput('kubernetes_token');
             const kubernetes_image = core.getInput('kubernetes_image');
-            const p = yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip');
-            console.log(process.env);
             const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
             const version = matches[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
@@ -59,9 +57,9 @@ function run() {
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: new Buffer(core.getInput('service_account_key'))
             }));
-            console.log(yield exec.exec('docker', ['build', '-t', dockerTag]));
+            console.log(yield exec.exec('docker', ['build', '-t', dockerTag, '.']));
             console.log(yield exec.exec('docker', ['push', dockerTag]));
-            yield toolCache.extractZip(p, '/tmp');
+            yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
             console.log(yield exec.exec('/tmp/terraform', ['init']));
             console.log(yield exec.exec('/tmp/terraform', [
                 'apply',
