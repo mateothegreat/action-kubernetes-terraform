@@ -23,7 +23,7 @@ async function run(): Promise<void> {
 
         console.log(await exec.exec('id'));
 
-        fs.writeFileSync('~/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
+        fs.writeFileSync('/home/runner/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
