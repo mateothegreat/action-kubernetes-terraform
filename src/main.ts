@@ -24,10 +24,13 @@ async function run(): Promise<void> {
 
         console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
 
-            input: new Buffer(core.getInput('service_account_key'))
+            input: Buffer.from(core.getInput('service_account_key'))
 
         }));
 
+        console.log(process.env);
+        console.log(await exec.exec('ls -la'));
+        console.log(await exec.exec('pwd'));
         console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]));
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));
 

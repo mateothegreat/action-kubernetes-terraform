@@ -47,8 +47,11 @@ function run() {
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
             console.log(`Deploying version "${version}" (${dockerTag})..`);
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
-                input: new Buffer(core.getInput('service_account_key'))
+                input: Buffer.from(core.getInput('service_account_key'))
             }));
+            console.log(process.env);
+            console.log(yield exec.exec('ls -la'));
+            console.log(yield exec.exec('pwd'));
             console.log(yield exec.exec('docker', ['build', '-t', dockerTag, '.']));
             console.log(yield exec.exec('docker', ['push', dockerTag]));
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
