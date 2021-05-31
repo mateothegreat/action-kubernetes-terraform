@@ -21,7 +21,9 @@ async function run(): Promise<void> {
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
 
-        fs.writeFileSync('/root/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`);
+        console.log(await exec.exec('id'));
+        
+        fs.writeFileSync('~/.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`);
 
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 

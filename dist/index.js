@@ -54,7 +54,8 @@ function run() {
             const version = matches[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
-            fs.writeFileSync('/root/.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`);
+            console.log(yield exec.exec('id'));
+            fs.writeFileSync('~/.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`);
             console.log(`Deploying version "${version}" (${dockerTag})..`);
             console.log(yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('service_account_key'))
