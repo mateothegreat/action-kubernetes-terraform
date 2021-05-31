@@ -72,6 +72,7 @@ function run() {
                         `-var=image=${core.getInput('kubernetes_image')}`
                     ], {
                         env: {
+                            TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
                             GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                         }
                     });
