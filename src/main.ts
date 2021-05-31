@@ -7,22 +7,9 @@ async function run(): Promise<void> {
 
     try {
 
-        const docker_image_base: string = core.getInput('docker_image_base');
-
-        const terraform_backend_credentials: string = core.getInput('terraform_backend_credentials');
-        const terraform_backend_bucket: string = core.getInput('terraform_backend_bucket');
-        const terraform_backend_prefix: string = core.getInput('terraform_backend_prefix');
-        const kubernetes_endpoint: string = core.getInput('kubernetes_endpoint');
-        const kubernetes_token: string = core.getInput('kubernetes_token');
-        const kubernetes_image: string = core.getInput('kubernetes_image');
-
-        const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
-        const version = matches[ 2 ];
+        const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base') }/${ repositoryName }:${ version }`;
-
-        console.log(await exec.exec('id'));
-
 
         if (core.getInput('npm_token')) {
 
@@ -46,8 +33,8 @@ async function run(): Promise<void> {
 
         });
 
-        await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
-        await exec.exec('docker', [ 'push', dockerTag ]);
+        // await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
+        // await exec.exec('docker', [ 'push', dockerTag ]);
 
         await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
@@ -61,23 +48,41 @@ async function run(): Promise<void> {
 
         });
 
-        await exec.exec('/tmp/terraform', [
+        let retries = 0;
 
-            'apply',
-            '-auto-approve',
-            `-var=host=${ core.getInput('kubernetes_endpoint') }`,
-            `-var=token=${ core.getInput('kubernetes_token') }`,
-            `-var=image=${ core.getInput('kubernetes_image') }`
+        while (true) {
 
-        ], {
+            retries++;
 
-            env: {
+            try {
 
-                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                await exec.exec('/tmp/terraform', [
+
+                    'apply',
+                    '-auto-approve',
+                    `-var=host=${ core.getInput('kubernetes_endpoint') }`,
+                    `-var=token=${ core.getInput('kubernetes_token') }`,
+                    `-var=image=${ core.getInput('kubernetes_image') }`
+
+                ], {
+
+                    env: {
+
+                        GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+
+                    }
+
+                });
+
+            } catch (err) {
+
+                console.log('** terraform apply failed! retrying..');
 
             }
 
-        });
+        }
+
+        console.log(`Deploy completed in ${ retries } retries.`);
 
     } catch (error) {
 

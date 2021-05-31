@@ -35,18 +35,9 @@ const fs = __importStar(require("fs"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const docker_image_base = core.getInput('docker_image_base');
-            const terraform_backend_credentials = core.getInput('terraform_backend_credentials');
-            const terraform_backend_bucket = core.getInput('terraform_backend_bucket');
-            const terraform_backend_prefix = core.getInput('terraform_backend_prefix');
-            const kubernetes_endpoint = core.getInput('kubernetes_endpoint');
-            const kubernetes_token = core.getInput('kubernetes_token');
-            const kubernetes_image = core.getInput('kubernetes_image');
-            const matches = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/);
-            const version = matches[2];
+            const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base')}/${repositoryName}:${version}`;
-            console.log(yield exec.exec('id'));
             if (core.getInput('npm_token')) {
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
             }
@@ -58,25 +49,35 @@ function run() {
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
             });
-            yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
-            yield exec.exec('docker', ['push', dockerTag]);
+            // await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
+            // await exec.exec('docker', [ 'push', dockerTag ]);
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
             yield exec.exec('/tmp/terraform', ['init'], {
                 env: {
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
             });
-            yield exec.exec('/tmp/terraform', [
-                'apply',
-                '-auto-approve',
-                `-var=host=${core.getInput('kubernetes_endpoint')}`,
-                `-var=token=${core.getInput('kubernetes_token')}`,
-                `-var=image=${core.getInput('kubernetes_image')}`
-            ], {
-                env: {
-                    GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+            let retries = 0;
+            while (true) {
+                retries++;
+                try {
+                    yield exec.exec('/tmp/terraform', [
+                        'apply',
+                        '-auto-approve',
+                        `-var=host=${core.getInput('kubernetes_endpoint')}`,
+                        `-var=token=${core.getInput('kubernetes_token')}`,
+                        `-var=image=${core.getInput('kubernetes_image')}`
+                    ], {
+                        env: {
+                            GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                        }
+                    });
                 }
-            });
+                catch (err) {
+                    console.log('** terraform apply failed! retrying..');
+                }
+            }
+            console.log(`Deploy completed in ${retries} retries.`);
         }
         catch (error) {
             core.setFailed(error.message);
