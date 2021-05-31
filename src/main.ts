@@ -26,8 +26,8 @@ async function run(): Promise<void> {
         fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
         fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
 
-        console.log(await exec.exec('gcloud', [ 'auth', 'activate-service-account', 'default', '--key-file', '/tmp/tfkey.json' ]));
-        
+        console.log(await exec.exec('gcloud', [ 'auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json' ]));
+
         console.log(`Deploying version "${ version }" (${ dockerTag })..`);
 
         console.log(await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
