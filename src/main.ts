@@ -43,6 +43,7 @@ async function run(): Promise<void> {
 
             env: {
 
+                TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
                 GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
 
             }
@@ -51,10 +52,12 @@ async function run(): Promise<void> {
 
         const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
 
-        let retries = 1;
+        let retries = 0;
         let failed = false;
 
         while (retries <= maxRetries) {
+
+            retries++;
 
             try {
 
@@ -86,8 +89,6 @@ async function run(): Promise<void> {
                 console.log(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
 
                 await wait(5000);
-
-                retries++;
 
             }
 

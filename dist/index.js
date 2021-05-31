@@ -63,13 +63,15 @@ function run() {
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
             yield exec.exec('/tmp/terraform', ['init'], {
                 env: {
+                    TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                 }
             });
             const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
-            let retries = 1;
+            let retries = 0;
             let failed = false;
             while (retries <= maxRetries) {
+                retries++;
                 try {
                     yield exec.exec('/tmp/terraform', [
                         'apply',
@@ -89,7 +91,6 @@ function run() {
                     failed = true;
                     console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
                     yield utilities_1.wait(5000);
-                    retries++;
                 }
             }
             if (!failed) {
