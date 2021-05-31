@@ -28,16 +28,18 @@ async function run(): Promise<void> {
 
         }));
 
-        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ], {
-
-            cwd: '/home/runner/work/frontend-app'
-
-        }));
 
         console.log(await exec.exec('ls -la'));
         console.log(await exec.exec('ls -la /home/runner/work/frontend-app/'));
         console.log(await exec.exec('ls -la /home/runner/work/'));
         console.log(await exec.exec('ls -la /home/runner/'));
+
+
+        console.log(await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ], {
+
+            cwd: '/home/runner/work/frontend-app'
+
+        }));
 
         console.log(await exec.exec('docker', [ 'push', dockerTag ]));
 
