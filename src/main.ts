@@ -34,6 +34,8 @@ async function run(): Promise<void> {
 
         });
 
+        console.log(`Building docker image for "${ dockerTag }"..`);
+
         await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
         await exec.exec('docker', [ 'push', dockerTag ]);
 
