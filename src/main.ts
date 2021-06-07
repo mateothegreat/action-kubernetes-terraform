@@ -34,8 +34,8 @@ async function run(): Promise<void> {
 
         });
 
-        // await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
-        // await exec.exec('docker', [ 'push', dockerTag ]);
+        await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
+        await exec.exec('docker', [ 'push', dockerTag ]);
 
         await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
