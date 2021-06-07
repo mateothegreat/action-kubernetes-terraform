@@ -58,8 +58,9 @@ function run() {
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
             });
-            // await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
-            // await exec.exec('docker', [ 'push', dockerTag ]);
+            console.log(`Building docker image for "${dockerTag}"..`);
+            yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
+            yield exec.exec('docker', ['push', dockerTag]);
             yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
             yield exec.exec('/tmp/terraform', ['init'], {
                 env: {
@@ -78,7 +79,7 @@ function run() {
                         '-auto-approve',
                         `-var=host=${core.getInput('kubernetes_endpoint')}`,
                         `-var=token=${core.getInput('kubernetes_token')}`,
-                        `-var=image=${core.getInput('kubernetes_image')}`
+                        `-var=image=${dockerTag}`
                     ], {
                         env: {
                             TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
