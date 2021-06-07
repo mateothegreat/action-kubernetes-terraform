@@ -46,7 +46,7 @@ function run() {
         try {
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
-            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}:${version}`;
+            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}/${repositoryName}:${version}`;
             if (core.getInput('npm_token')) {
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
             }
