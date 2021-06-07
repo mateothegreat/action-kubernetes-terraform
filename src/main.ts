@@ -69,7 +69,7 @@ async function run(): Promise<void> {
                     '-auto-approve',
                     `-var=host=${ core.getInput('kubernetes_endpoint') }`,
                     `-var=token=${ core.getInput('kubernetes_token') }`,
-                    `-var=image=${ core.getInput('kubernetes_image') }`
+                    `-var=image=${ dockerTag }`
 
                 ], {
 
