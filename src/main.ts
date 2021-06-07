@@ -57,6 +57,19 @@ async function run(): Promise<void> {
         let retries = 0;
         let failed = false;
 
+        const env = {
+
+            DB_HOSTNAME: core.getInput('DB_HOSTNAME'),
+            DB_PORT: core.getInput('DB_PORT'),
+            DB_USERNAME: core.getInput('DB_USERNAME'),
+            DB_PASSWORD: core.getInput('DB_PASSWORD'),
+            DB_NAME: core.getInput('DB_NAME'),
+            ELASTICSEARCH_HOST: core.getInput('ELASTICSEARCH_HOST'),
+            ELASTICSEARCH_PORT: core.getInput('ELASTICSEARCH_PORT'),
+            ELASTICSEARCH_SCHEME: core.getInput('ELASTICSEARCH_SCHEME')
+
+        };
+
         while (retries <= maxRetries) {
 
             retries++;
@@ -69,7 +82,8 @@ async function run(): Promise<void> {
                     '-auto-approve',
                     `-var=host=${ core.getInput('kubernetes_endpoint') }`,
                     `-var=token=${ core.getInput('kubernetes_token') }`,
-                    `-var=image=${ dockerTag }`
+                    `-var=image=${ dockerTag }`,
+                    `-var=env=${ JSON.stringify(env) }`
 
                 ], {
 
