@@ -12,7 +12,11 @@ async function run(): Promise<void> {
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base', { required: true }) }/${ repositoryName }/${ repositoryName }:${ version }`;
 
+        console.log(`token=${ core.getInput('npm_token') }`);
+        
         if (core.getInput('npm_token')) {
+
+            console.log('Writing .npmrc..');
 
             fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
