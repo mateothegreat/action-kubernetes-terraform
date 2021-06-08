@@ -75,6 +75,12 @@ function run() {
                 ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
                 RABBITMQ_URI: core.getInput('rabbitmq_uri')
             };
+            if (core.getInput('port')) {
+                env['PORT'] = core.getInput('port');
+            }
+            if (core.getInput('debug')) {
+                env['DEBUG'] = core.getInput('debug');
+            }
             while (retries <= maxRetries) {
                 retries++;
                 try {

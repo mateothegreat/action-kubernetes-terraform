@@ -59,7 +59,7 @@ async function run(): Promise<void> {
         let retries = 0;
         let failed = false;
 
-        const env = {
+        const env: any = {
 
             DB_HOSTNAME: core.getInput('db_hostname'),
             DB_PORT: core.getInput('db_port'),
@@ -72,6 +72,18 @@ async function run(): Promise<void> {
             RABBITMQ_URI: core.getInput('rabbitmq_uri')
 
         };
+
+        if (core.getInput('port')) {
+
+            env[ 'PORT' ] = core.getInput('port');
+
+        }
+        
+        if (core.getInput('debug')) {
+
+            env[ 'DEBUG' ] = core.getInput('debug');
+
+        }
 
         while (retries <= maxRetries) {
 
