@@ -68,7 +68,8 @@ async function run(): Promise<void> {
             DB_NAME: core.getInput('db_name'),
             ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
             ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
-            ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme')
+            ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
+            RABBITMQ_URI: core.getInput('rabbitmq_uri')
 
         };
 
