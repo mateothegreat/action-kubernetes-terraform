@@ -72,23 +72,30 @@ function run() {
             const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
             let retries = 0;
             let failed = false;
-            const env = {
-                DB_HOSTNAME: core.getInput('db_hostname'),
-                DB_PORT: core.getInput('db_port'),
-                DB_USERNAME: core.getInput('db_username'),
-                DB_PASSWORD: core.getInput('db_password'),
-                DB_NAME: core.getInput('db_name'),
-                ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
-                ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
-                ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
-                RABBITMQ_URI: core.getInput('rabbitmq_uri')
-            };
-            if (core.getInput('port')) {
-                env['PORT'] = core.getInput('port');
-            }
-            if (core.getInput('debug')) {
-                env['DEBUG'] = core.getInput('debug');
-            }
+            // const env: any = {
+            //
+            //     DB_HOSTNAME: core.getInput('db_hostname'),
+            //     DB_PORT: core.getInput('db_port'),
+            //     DB_USERNAME: core.getInput('db_username'),
+            //     DB_PASSWORD: core.getInput('db_password'),
+            //     DB_NAME: core.getInput('db_name'),
+            //     ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
+            //     ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
+            //     ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
+            //     RABBITMQ_URI: core.getInput('rabbitmq_uri')
+            //
+            // };
+            // if (core.getInput('port')) {
+            //
+            //     env[ 'PORT' ] = core.getInput('port');
+            //
+            // }
+            //
+            // if (core.getInput('debug')) {
+            //
+            //     env[ 'DEBUG' ] = core.getInput('debug');
+            //
+            // }
             while (retries <= maxRetries) {
                 retries++;
                 try {
@@ -98,7 +105,7 @@ function run() {
                         `-var=host=${core.getInput('kubernetes_endpoint')}`,
                         `-var=token=${core.getInput('kubernetes_token')}`,
                         `-var=image=${dockerTag}`,
-                        `-var=env=${JSON.stringify(env)}`
+                        `-var=env=${JSON.stringify(core.getInput('env'))}`
                     ], {
                         env: {
                             TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
