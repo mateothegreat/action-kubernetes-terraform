@@ -39,7 +39,6 @@ function run() {
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}/${repositoryName}:${version}`;
-            console.log(`token=${core.getInput('npm_token')}`);
             if (core.getInput('npm_token')) {
                 console.log('Writing .npmrc..');
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
@@ -66,14 +65,14 @@ function run() {
             let retries = 0;
             let failed = false;
             const env = {
-                DB_HOSTNAME: core.getInput('DB_HOSTNAME'),
-                DB_PORT: core.getInput('DB_PORT'),
-                DB_USERNAME: core.getInput('DB_USERNAME'),
-                DB_PASSWORD: core.getInput('DB_PASSWORD'),
-                DB_NAME: core.getInput('DB_NAME'),
-                ELASTICSEARCH_HOST: core.getInput('ELASTICSEARCH_HOST'),
-                ELASTICSEARCH_PORT: core.getInput('ELASTICSEARCH_PORT'),
-                ELASTICSEARCH_SCHEME: core.getInput('ELASTICSEARCH_SCHEME')
+                DB_HOSTNAME: core.getInput('db_hostname'),
+                DB_PORT: core.getInput('db_port'),
+                DB_USERNAME: core.getInput('db_username'),
+                DB_PASSWORD: core.getInput('db_password'),
+                DB_NAME: core.getInput('db_name'),
+                ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
+                ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
+                ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme')
             };
             while (retries <= maxRetries) {
                 retries++;
