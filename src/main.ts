@@ -3,14 +3,27 @@ import * as toolCache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
 import { wait } from './utilities';
+import * as YAML from 'yamljs';
 
 async function run(): Promise<void> {
 
     try {
 
+        console.log(process.env);
+        console.log(core.getInput('env'));
+        console.log(YAML.parse(core.getInput('env')));
+
+        let env;
+
         const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[ 2 ];
         const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[ 1 ];
         const dockerTag = `${ core.getInput('docker_image_base', { required: true }) }/${ repositoryName }/${ repositoryName }:${ version }`;
+
+        if (core.getInput('env')) {
+
+            env = JSON.stringify(YAML.parse(core.getInput('env')));
+
+        }
 
         if (core.getInput('npm_token')) {
 
@@ -99,7 +112,7 @@ async function run(): Promise<void> {
                     `-var=host=${ core.getInput('kubernetes_endpoint') }`,
                     `-var=token=${ core.getInput('kubernetes_token') }`,
                     `-var=image=${ dockerTag }`,
-                    `-var=env=${ JSON.stringify(core.getInput('env')) }`
+                    `-var=env=${ env }`
 
                 ], {
 
@@ -113,6 +126,8 @@ async function run(): Promise<void> {
                 });
 
                 failed = false;
+
+                break;
 
             } catch (err) {
 

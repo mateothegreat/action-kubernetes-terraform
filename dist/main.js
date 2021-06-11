@@ -33,12 +33,20 @@ const toolCache = __importStar(require("@actions/tool-cache"));
 const exec = __importStar(require("@actions/exec"));
 const fs = __importStar(require("fs"));
 const utilities_1 = require("./utilities");
+const YAML = __importStar(require("yamljs"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            console.log(process.env);
+            console.log(core.getInput('env'));
+            console.log(YAML.parse(core.getInput('env')));
+            let env;
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
             const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}/${repositoryName}:${version}`;
+            if (core.getInput('env')) {
+                env = JSON.stringify(YAML.parse(core.getInput('env')));
+            }
             if (core.getInput('npm_token')) {
                 console.log('Writing .npmrc..');
                 fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
@@ -97,7 +105,7 @@ function run() {
                         `-var=host=${core.getInput('kubernetes_endpoint')}`,
                         `-var=token=${core.getInput('kubernetes_token')}`,
                         `-var=image=${dockerTag}`,
-                        `-var=env=${JSON.stringify(core.getInput('env'))}`
+                        `-var=env=${env}`
                     ], {
                         env: {
                             TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
@@ -105,6 +113,7 @@ function run() {
                         }
                     });
                     failed = false;
+                    break;
                 }
                 catch (err) {
                     failed = true;
