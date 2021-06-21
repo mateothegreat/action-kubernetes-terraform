@@ -54,100 +54,77 @@ async function run(): Promise<void> {
         await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
         await exec.exec('docker', [ 'push', dockerTag ]);
 
-        await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
+        if (core.getInput('terraform_deploy_file')) {
 
-        await exec.exec('/tmp/terraform', [ 'init' ], {
+            await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
 
-            env: {
+            await exec.exec('/tmp/terraform', [ 'init' ], {
 
-                TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                env: {
 
-            }
+                    TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
+                    GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
 
-        });
+                }
 
-        const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
+            });
 
-        let retries = 0;
-        let failed = false;
+            const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
 
-        // const env: any = {
-        //
-        //     DB_HOSTNAME: core.getInput('db_hostname'),
-        //     DB_PORT: core.getInput('db_port'),
-        //     DB_USERNAME: core.getInput('db_username'),
-        //     DB_PASSWORD: core.getInput('db_password'),
-        //     DB_NAME: core.getInput('db_name'),
-        //     ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
-        //     ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
-        //     ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
-        //     RABBITMQ_URI: core.getInput('rabbitmq_uri')
-        //
-        // };
+            let retries = 0;
+            let failed = false;
 
+            while (retries <= maxRetries) {
 
-        // if (core.getInput('port')) {
-        //
-        //     env[ 'PORT' ] = core.getInput('port');
-        //
-        // }
-        //
-        // if (core.getInput('debug')) {
-        //
-        //     env[ 'DEBUG' ] = core.getInput('debug');
-        //
-        // }
+                retries++;
 
-        while (retries <= maxRetries) {
+                try {
 
-            retries++;
+                    await exec.exec('/tmp/terraform', [
 
-            try {
+                        'apply',
+                        '-auto-approve',
+                        `-var=host=${ core.getInput('kubernetes_endpoint') }`,
+                        `-var=token=${ core.getInput('kubernetes_token') }`,
+                        `-var=image=${ dockerTag }`,
+                        `-var=env=${ env }`
 
-                await exec.exec('/tmp/terraform', [
+                    ], {
 
-                    'apply',
-                    '-auto-approve',
-                    `-var=host=${ core.getInput('kubernetes_endpoint') }`,
-                    `-var=token=${ core.getInput('kubernetes_token') }`,
-                    `-var=image=${ dockerTag }`,
-                    `-var=env=${ env }`
+                        env: {
 
-                ], {
+                            TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
+                            GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
 
-                    env: {
+                        }
 
-                        TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                        GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                    });
 
-                    }
+                    failed = false;
 
-                });
+                    break;
 
-                failed = false;
+                } catch (err) {
 
-                break;
+                    failed = true;
 
-            } catch (err) {
+                    console.log(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
 
-                failed = true;
+                    await wait(5000);
 
-                console.log(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
-
-                await wait(5000);
+                }
 
             }
 
-        }
+            if (!failed) {
 
-        if (!failed) {
+                console.log(`Deploy completed in ${ retries } retries.`);
 
-            console.log(`Deploy completed in ${ retries } retries.`);
+            } else {
 
-        } else {
+                core.setFailed(`terraform apply failed after ${ retries } retries!`);
 
-            core.setFailed(`terraform apply failed after ${ retries } retries!`);
+            }
 
         }
 
@@ -156,6 +133,7 @@ async function run(): Promise<void> {
         core.setFailed(error.message);
 
     }
+
 
 }
 
