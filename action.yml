@@ -36,10 +36,6 @@ inputs:
     required: false
     description: "npm registry"
 
-  storage_account_name:
-    required: false
-    description: ""
-
   storage_account_key:
     required: false
     description: ""

@@ -61,22 +61,28 @@ function run() {
                 fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}` + "\n", { flag: 'a' });
             }
             if (core.getInput('service_account_key')) {
-                fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
-                yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json']);
+                fs.writeFileSync('/tmp/terraform-key.json', core.getInput('service_account_key'), { flag: 'w+' });
+                yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/terraform-key.json']);
+            }
+            if (core.getInput('storage_account_key')) {
+                fs.writeFileSync('/tmp/storage-key.json', core.getInput('storage_account_key'), { flag: 'w+' });
             }
             core.info(`Deploying version "${version}" (${dockerTag})..`);
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
             });
             core.debug(`Building docker image for "${dockerTag}"..`);
-            yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
+            const buildArgs = [];
+            if (core.getInput('docker_build_args')) {
+            }
+            yield exec.exec('docker', ['build', ...'-t', dockerTag, '.']);
             yield exec.exec('docker', ['push', dockerTag]);
             if (core.getInput('terraform_deploy_file')) {
                 yield toolCache.extractZip(yield toolCache.downloadTool(`https://releases.hashicorp.com/terraform/${core.getInput('terraform_version')}/terraform_${core.getInput('terraform_version')}_linux_amd64.zip`), '/tmp');
                 yield exec.exec('/tmp/terraform', ['init'], {
                     env: {
                         TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                        GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                        GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
                     }
                 });
                 const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
@@ -95,7 +101,7 @@ function run() {
                         ], {
                             env: {
                                 TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
                             }
                         });
                         failed = false;

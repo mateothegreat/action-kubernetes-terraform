@@ -38,9 +38,15 @@ async function run(): Promise<void> {
 
         if (core.getInput('service_account_key')) {
 
-            fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
+            fs.writeFileSync('/tmp/terraform-key.json', core.getInput('service_account_key'), { flag: 'w+' });
 
-            await exec.exec('gcloud', [ 'auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json' ]);
+            await exec.exec('gcloud', [ 'auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/terraform-key.json' ]);
+
+        }
+
+        if (core.getInput('storage_account_key')) {
+
+            fs.writeFileSync('/tmp/storage-key.json', core.getInput('storage_account_key'), { flag: 'w+' });
 
         }
 
@@ -54,7 +60,13 @@ async function run(): Promise<void> {
 
         core.debug(`Building docker image for "${ dockerTag }"..`);
 
-        await exec.exec('docker', [ 'build', '-t', dockerTag, '.' ]);
+        const buildArgs = [];
+
+        if(core.getInput('docker_build_args')) {
+
+        }
+
+        await exec.exec('docker', [ 'build', ...'-t', dockerTag, '.' ]);
         await exec.exec('docker', [ 'push', dockerTag ]);
 
         if (core.getInput('terraform_deploy_file')) {
@@ -66,7 +78,7 @@ async function run(): Promise<void> {
                 env: {
 
                     TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                    GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                    GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
 
                 }
 
@@ -97,7 +109,7 @@ async function run(): Promise<void> {
                         env: {
 
                             TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                            GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                            GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
 
                         }
 
