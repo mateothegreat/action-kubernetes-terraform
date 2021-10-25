@@ -44,9 +44,7 @@ inputs:
     required: false
     description: ""
 
-  service_account_key:
-    required: false
-    description: ""
+
   service_account_key:
     required: false
     description: ""
