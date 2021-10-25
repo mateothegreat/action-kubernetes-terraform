@@ -25,7 +25,7 @@ async function run(): Promise<void> {
 
         }
 
-        if (core.getInput('npm_token')) {
+        // if (core.getInput('npm_token')) {
 
             console.log('Writing .npmrc..');
 
@@ -44,7 +44,7 @@ async function run(): Promise<void> {
             console.log(fs.readFileSync('.npmrc'))
 
             console.log(1111);
-        }
+        // }
 
         console.log(222);
 
