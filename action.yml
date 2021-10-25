@@ -36,6 +36,10 @@ inputs:
     required: false
     description: "npm registry"
 
+  storage_account_name:
+    required: false
+    description: ""
+
   storage_account_key:
     required: false
     description: ""
@@ -52,6 +56,10 @@ inputs:
   docker_image_base:
     required: false
     description: ""
+
+  terraform_version:
+    required: false
+    description: "terraform version"
   terraform_retries:
     required: false
     description: ""

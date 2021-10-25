@@ -59,7 +59,7 @@ async function run(): Promise<void> {
 
         if (core.getInput('terraform_deploy_file')) {
 
-            await toolCache.extractZip(await toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
+            await toolCache.extractZip(await toolCache.downloadTool(`https://releases.hashicorp.com/terraform/${ core.getInput('terraform_version') }/terraform_${ core.getInput('terraform_version') }_linux_amd64.zip`), '/tmp');
 
             await exec.exec('/tmp/terraform', [ 'init' ], {
 
