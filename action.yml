@@ -48,9 +48,7 @@ inputs:
   service_account_key:
     required: false
     description: ""
-  service_account_key:
-    required: false
-    description: ""
+
   docker_image_base:
     required: false
     description: ""
