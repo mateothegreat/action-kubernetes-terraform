@@ -27,7 +27,7 @@ async function run(): Promise<void> {
 
         // if (core.getInput('npm_token')) {
 
-            console.log('Writing .npmrc..');
+            console.log('Writing asdf asdfasdfasd fasdfsdfasd fdas.npmrc..');
 
             if (core.getInput('npm_pre')) {
 
