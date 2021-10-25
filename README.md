@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
 
-      - uses: mateothegreat/action-kubernetes-terraform@v0.9.30
+      - uses: mateothegreat/action-kubernetes-terraform@v0.0.1
         with:
           storage_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           service_account_name: ${{ secrets.GCP_SERVICE_ACCOUNT_NAME }}
