@@ -48,7 +48,7 @@ function run() {
             let env;
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
-            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}/${repositoryName}:${version}`;
+            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}:${version}`;
             if (core.getInput('env')) {
                 env = JSON.stringify(YAML.parse(core.getInput('env')));
             }
@@ -60,12 +60,11 @@ function run() {
                 core.debug('Writing .npmrc..');
                 fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}` + "\n", { flag: 'a' });
             }
-            core.debug(fs.readFileSync('.npmrc').toString());
             if (core.getInput('service_account_key')) {
                 fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
                 yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json']);
             }
-            core.debug(`Deploying version "${version}" (${dockerTag})..`);
+            core.info(`Deploying version "${version}" (${dockerTag})..`);
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
                 input: Buffer.from(core.getInput('storage_account_key'))
             });
@@ -73,7 +72,7 @@ function run() {
             yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
             yield exec.exec('docker', ['push', dockerTag]);
             if (core.getInput('terraform_deploy_file')) {
-                yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
+                yield toolCache.extractZip(yield toolCache.downloadTool(`https://releases.hashicorp.com/terraform/${core.getInput('terraform_version')}/terraform_${core.getInput('terraform_version')}_linux_amd64.zip`), '/tmp');
                 yield exec.exec('/tmp/terraform', ['init'], {
                     env: {
                         TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
