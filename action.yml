@@ -56,6 +56,9 @@ inputs:
   docker_image_base:
     required: false
     description: ""
+  docker_build_args:
+    required: false`
+    description: "list of build args to pass to docker build"
 
   terraform_version:
     required: false
@@ -66,12 +69,11 @@ inputs:
   terraform_workspace:
     required: false
     description: ""
+
   env:
     required: false
-    description: ""
+    description: "envrioment variables to pass to terraform apply tf file"
 
 runs:
   using: "node12"
   main: "dist/index.js"
-#  using: "docker"
-#  image: Dockerfile
