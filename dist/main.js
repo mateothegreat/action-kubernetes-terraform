@@ -46,7 +46,9 @@ function run() {
             let env;
             const version = process.env.GITHUB_REF.match(/^refs\/([\w]+)\/(.*)$/)[2];
             const repositoryName = process.env.GITHUB_REPOSITORY.match(/\/(.*)$/)[1];
-            const dockerTag = `${core.getInput('docker_image_base', { required: true })}/${repositoryName}/${repositoryName}:${version}`;
+            const dockerTag = `${core.getInput('docker_image_base', {
+                required: true
+            })}/${repositoryName}/${repositoryName}:${version}`;
             if (core.getInput('env')) {
                 env = JSON.stringify(YAML.parse(core.getInput('env')));
             }
@@ -56,7 +58,7 @@ function run() {
                 console.log('Writing .npmrc first line..');
                 fs.writeFileSync('.npmrc', core.getInput('npm_pre'));
             }
-            core.debug((`//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}`));
+            core.debug(`//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}`);
             fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
             core.debug(fs.readFileSync('.npmrc').toString());
             console.log(1111);
@@ -64,7 +66,13 @@ function run() {
             console.log(222);
             if (core.getInput('service_account_key')) {
                 fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
-                yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json']);
+                yield exec.exec('gcloud', [
+                    'auth',
+                    'activate-service-account',
+                    core.getInput('service_account_name'),
+                    '--key-file',
+                    '/tmp/tfkey.json'
+                ]);
             }
             console.log(`Deploying version "${version}" (${dockerTag})..`);
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
@@ -77,7 +85,9 @@ function run() {
                 yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
                 yield exec.exec('/tmp/terraform', ['init'], {
                     env: {
-                        TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
+                        TF_WORKSPACE: core.getInput('terraform_workspace', {
+                            required: true
+                        }),
                         GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
                     }
                 });
