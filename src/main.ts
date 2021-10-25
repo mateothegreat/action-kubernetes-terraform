@@ -29,7 +29,7 @@ async function run(): Promise<void> {
 
             console.log('Writing .npmrc..');
 
-            fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
+            fs.writeFileSync('.npmrc', `//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
         }
 
