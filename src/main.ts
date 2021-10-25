@@ -7,6 +7,11 @@ import * as YAML from 'yamljs';
 
 async function run(): Promise<void> {
 
+
+    core.info('wtfff')
+    core.error('wtfff')
+    core.debug('wtfff')
+
     try {
 
         console.log(process.env);
@@ -145,6 +150,8 @@ async function run(): Promise<void> {
 
     } catch (error) {
 
+        core.info(error)
+        console.log(error);
         core.setFailed(error.message);
 
     }

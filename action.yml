@@ -35,6 +35,37 @@ inputs:
   npm_registry:
     required: false
     description: "npm registry"
+
+  storage_account_key:
+    required: false
+    description: ""
+
+  service_account_name:
+    required: false
+    description: ""
+
+  service_account_key:
+    required: false
+    description: ""
+  service_account_key:
+    required: false
+    description: ""
+  service_account_key:
+    required: false
+    description: ""
+  docker_image_base:
+    required: false
+    description: ""
+  terraform_retries:
+    required: false
+    description: ""
+  terraform_workspace:
+    required: false
+    description: ""
+  env:
+    required: false
+    description: ""
+
 runs:
   using: "node12"
   main: "dist/index.js"
