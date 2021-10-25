@@ -36,12 +36,15 @@ jobs:
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           kubernetes_endpoint: ${{ secrets.GKE_DEV_URL }}
           kubernetes_token: ${{ secrets.GKE_DEV_TOKEN }}
-          docker_image_base: gcr.io/rbacai
           npm_pre: "@foo:registry=https://npm.pkg.github.com/foo"
           npm_token: ${{ secrets.NPM_TOKEN }}
           npm_registry: npm.pkg.github.com
           terraform_retries: 3
           terraform_workspace: default
+          docker_image_base: gcr.io/rbacai
+          docker_build_args: |
+            myarg1: somevalue
+            supersecret: ${{ secrets.SOME_BUILD_ARG }}
           env: |
             DEBUG: true
             PORT: ${{ secrets.JWT_SECRET }}

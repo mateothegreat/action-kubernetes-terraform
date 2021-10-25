@@ -44,7 +44,6 @@ inputs:
     required: false
     description: ""
 
-
   service_account_key:
     required: false
     description: ""
@@ -52,6 +51,7 @@ inputs:
   docker_image_base:
     required: false
     description: ""
+
   docker_build_args:
     required: false`
     description: "list of build args to pass to docker build"
