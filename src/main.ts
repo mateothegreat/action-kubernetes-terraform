@@ -31,10 +31,13 @@ async function run(): Promise<void> {
 
             if (core.getInput('npm_pre')) {
 
+                console.log('Writing .npmrc first line..');
+
                 fs.writeFileSync('.npmrc', core.getInput('npm_pre'))
 
             }
 
+            console.log(`//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`);
             fs.writeFileSync('.npmrc', `//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
 
