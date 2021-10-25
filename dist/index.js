@@ -54,15 +54,21 @@ function run() {
             }
             if (core.getInput('npm_pre')) {
                 core.debug('Writing .npmrc first line..');
-                fs.writeFileSync('.npmrc', core.getInput('npm_pre') + "\r\n", { flag: 'w' });
+                fs.writeFileSync('.npmrc', core.getInput('npm_pre') + '\r\n', { flag: 'w' });
             }
             if (core.getInput('npm_token')) {
                 core.debug('Writing .npmrc..');
-                fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}` + "\n", { flag: 'a' });
+                fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}` + '\n', { flag: 'a' });
             }
             if (core.getInput('service_account_key')) {
                 fs.writeFileSync('/tmp/terraform-key.json', core.getInput('service_account_key'), { flag: 'w+' });
-                yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/terraform-key.json']);
+                yield exec.exec('gcloud', [
+                    'auth',
+                    'activate-service-account',
+                    core.getInput('service_account_name'),
+                    '--key-file',
+                    '/tmp/terraform-key.json'
+                ]);
             }
             core.info(`Deploying version "${version}" (${dockerTag})..`);
             yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', 'https://gcr.io'], {
@@ -70,14 +76,14 @@ function run() {
             });
             core.debug(`Building docker image for "${dockerTag}"..`);
             const dockerBuildArgs = ['build'];
+            dockerBuildArgs.push('-t');
+            dockerBuildArgs.push(dockerTag);
             if (core.getInput('docker_build_args')) {
                 const args = YAML.parse(core.getInput('env'));
                 for (let key in args) {
                     dockerBuildArgs.push(`--build-arg ${key}=${args[key]}`);
                 }
             }
-            dockerBuildArgs.push('-t');
-            dockerBuildArgs.push(dockerTag);
             dockerBuildArgs.push('.');
             yield exec.exec('docker', dockerBuildArgs);
             yield exec.exec('docker', ['push', dockerTag]);

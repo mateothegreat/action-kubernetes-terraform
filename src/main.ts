@@ -54,6 +54,9 @@ async function run(): Promise<void> {
 
         const dockerBuildArgs = ['build'];
 
+        dockerBuildArgs.push('-t');
+        dockerBuildArgs.push(dockerTag);
+
         if (core.getInput('docker_build_args')) {
             const args = YAML.parse(core.getInput('env'));
 
@@ -62,8 +65,6 @@ async function run(): Promise<void> {
             }
         }
 
-        dockerBuildArgs.push('-t');
-        dockerBuildArgs.push(dockerTag);
         dockerBuildArgs.push('.');
 
         await exec.exec('docker', dockerBuildArgs);
