@@ -1,7 +1,14 @@
 const YAML = require('yamljs');
 
-console.log(YAML.parse(`
+const args = YAML.parse(`
 a:
     b: 1
     c: 2
-d: e`))
+d: e`);
+
+console.log(args);
+
+for(let k in args) {
+
+    console.log(k);
+}

@@ -44,12 +44,6 @@ async function run(): Promise<void> {
 
         }
 
-        if (core.getInput('storage_account_key')) {
-
-            fs.writeFileSync('/tmp/storage-key.json', core.getInput('storage_account_key'), { flag: 'w+' });
-
-        }
-
         core.info(`Deploying version "${ version }" (${ dockerTag })..`);
 
         await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', 'https://gcr.io' ], {
@@ -60,13 +54,25 @@ async function run(): Promise<void> {
 
         core.debug(`Building docker image for "${ dockerTag }"..`);
 
-        const buildArgs = [];
+        const dockerBuildArgs = ['build'];
 
         if(core.getInput('docker_build_args')) {
 
+            const args = YAML.parse(core.getInput('env'));
+
+            for(let key in args) {
+
+                dockerBuildArgs.push(`--build-arg ${key}=${args[key]}`)
+
+            }
+
         }
 
-        await exec.exec('docker', [ 'build', ...'-t', dockerTag, '.' ]);
+        dockerBuildArgs.push('-t')
+        dockerBuildArgs.push(dockerTag)
+        dockerBuildArgs.push('.')
+
+        await exec.exec('docker', dockerBuildArgs);
         await exec.exec('docker', [ 'push', dockerTag ]);
 
         if (core.getInput('terraform_deploy_file')) {
