@@ -43,7 +43,10 @@ async function run(): Promise<void> {
 
             console.log(fs.readFileSync('.npmrc'))
 
+            console.log(1111);
         }
+
+        console.log(222);
 
         if (core.getInput('service_account_key')) {
 

@@ -26,6 +26,9 @@ inputs:
   terraform_backend_prefix:
     required: true
     description: "terraform backend prefix"
+  npm_pre:
+    required: false
+    description: "npm first line""
   npm_token:
     required: false
     description: "npm token"
