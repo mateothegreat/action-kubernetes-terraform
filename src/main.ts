@@ -27,7 +27,7 @@ async function run(): Promise<void> {
 
         // if (core.getInput('npm_token')) {
 
-            console.log('Writing asdf asdfasdfasd fasdfsdfasd fdas.npmrc..');
+            core.debug('Writing asdf asdfasdfasd fasdfsdfasd fdas.npmrc..');
 
             if (core.getInput('npm_pre')) {
 
@@ -37,11 +37,11 @@ async function run(): Promise<void> {
 
             }
 
-            console.log(`//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`);
+        core.debug((`//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`);
             fs.writeFileSync('.npmrc', `//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
 
-            console.log(fs.readFileSync('.npmrc'))
+        core.debug(fs.readFileSync('.npmrc'))
 
             console.log(1111);
         // }
