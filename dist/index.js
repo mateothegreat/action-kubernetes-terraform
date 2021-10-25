@@ -79,7 +79,7 @@ function run() {
             dockerBuildArgs.push('-t');
             dockerBuildArgs.push(dockerTag);
             if (core.getInput('docker_build_args')) {
-                const args = YAML.parse(core.getInput('env'));
+                const args = YAML.parse(core.getInput('docker_build_args'));
                 for (let key in args) {
                     dockerBuildArgs.push(`--build-arg ${key}=${args[key]}`);
                 }
