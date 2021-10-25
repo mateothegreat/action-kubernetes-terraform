@@ -11,7 +11,7 @@ inputs:
   kubernetes_token:
     required: true
     description: "access token"
-  kunerbetes_image:
+  kubernetes_image:
     required: true
     description: "docker image"
   kubernetes_environment_variables:
