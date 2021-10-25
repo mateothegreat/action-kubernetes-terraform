@@ -26,6 +26,12 @@ inputs:
   terraform_backend_prefix:
     required: true
     description: "terraform backend prefix"
+  npm_token:
+    required: false
+    description: "npm token"
+  npm_registry:
+    required: false
+    description: "npm registry"
 runs:
   using: "node12"
   main: "dist/index.js"
