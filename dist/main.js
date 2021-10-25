@@ -36,6 +36,9 @@ const utilities_1 = require("./utilities");
 const YAML = __importStar(require("yamljs"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info('wtfff');
+        core.error('wtfff');
+        core.debug('wtfff');
         try {
             console.log(process.env);
             console.log(core.getInput('env'));
@@ -47,10 +50,18 @@ function run() {
             if (core.getInput('env')) {
                 env = JSON.stringify(YAML.parse(core.getInput('env')));
             }
-            if (core.getInput('npm_token')) {
-                console.log('Writing .npmrc..');
-                fs.writeFileSync('.npmrc', `//registry.npmjs.org/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
+            // if (core.getInput('npm_token')) {
+            core.debug('Writing asdf asdfasdfasd fasdfsdfasd fdas.npmrc..');
+            if (core.getInput('npm_pre')) {
+                console.log('Writing .npmrc first line..');
+                fs.writeFileSync('.npmrc', core.getInput('npm_pre'));
             }
+            core.debug((`//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}`));
+            fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}`, { flag: 'w+' });
+            core.debug(fs.readFileSync('.npmrc').toString());
+            console.log(1111);
+            // }
+            console.log(222);
             if (core.getInput('service_account_key')) {
                 fs.writeFileSync('/tmp/tfkey.json', core.getInput('service_account_key'), { flag: 'w+' });
                 yield exec.exec('gcloud', ['auth', 'activate-service-account', core.getInput('service_account_name'), '--key-file', '/tmp/tfkey.json']);
@@ -62,73 +73,53 @@ function run() {
             console.log(`Building docker image for "${dockerTag}"..`);
             yield exec.exec('docker', ['build', '-t', dockerTag, '.']);
             yield exec.exec('docker', ['push', dockerTag]);
-            yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
-            yield exec.exec('/tmp/terraform', ['init'], {
-                env: {
-                    TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                    GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+            if (core.getInput('terraform_deploy_file')) {
+                yield toolCache.extractZip(yield toolCache.downloadTool('https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip'), '/tmp');
+                yield exec.exec('/tmp/terraform', ['init'], {
+                    env: {
+                        TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
+                        GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                    }
+                });
+                const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
+                let retries = 0;
+                let failed = false;
+                while (retries <= maxRetries) {
+                    retries++;
+                    try {
+                        yield exec.exec('/tmp/terraform', [
+                            'apply',
+                            '-auto-approve',
+                            `-var=host=${core.getInput('kubernetes_endpoint')}`,
+                            `-var=token=${core.getInput('kubernetes_token')}`,
+                            `-var=image=${dockerTag}`,
+                            `-var=env=${env}`
+                        ], {
+                            env: {
+                                TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
+                                GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
+                            }
+                        });
+                        failed = false;
+                        break;
+                    }
+                    catch (err) {
+                        failed = true;
+                        console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
+                        yield utilities_1.wait(5000);
+                    }
                 }
-            });
-            const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
-            let retries = 0;
-            let failed = false;
-            // const env: any = {
-            //
-            //     DB_HOSTNAME: core.getInput('db_hostname'),
-            //     DB_PORT: core.getInput('db_port'),
-            //     DB_USERNAME: core.getInput('db_username'),
-            //     DB_PASSWORD: core.getInput('db_password'),
-            //     DB_NAME: core.getInput('db_name'),
-            //     ELASTICSEARCH_HOST: core.getInput('elasticsearch_host'),
-            //     ELASTICSEARCH_PORT: core.getInput('elasticsearch_port'),
-            //     ELASTICSEARCH_SCHEME: core.getInput('elasticsearch_scheme'),
-            //     RABBITMQ_URI: core.getInput('rabbitmq_uri')
-            //
-            // };
-            // if (core.getInput('port')) {
-            //
-            //     env[ 'PORT' ] = core.getInput('port');
-            //
-            // }
-            //
-            // if (core.getInput('debug')) {
-            //
-            //     env[ 'DEBUG' ] = core.getInput('debug');
-            //
-            // }
-            while (retries <= maxRetries) {
-                retries++;
-                try {
-                    yield exec.exec('/tmp/terraform', [
-                        'apply',
-                        '-auto-approve',
-                        `-var=host=${core.getInput('kubernetes_endpoint')}`,
-                        `-var=token=${core.getInput('kubernetes_token')}`,
-                        `-var=image=${dockerTag}`,
-                        `-var=env=${env}`
-                    ], {
-                        env: {
-                            TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
-                            GOOGLE_APPLICATION_CREDENTIALS: '/tmp/tfkey.json'
-                        }
-                    });
-                    failed = false;
-                    break;
+                if (!failed) {
+                    console.log(`Deploy completed in ${retries} retries.`);
                 }
-                catch (err) {
-                    failed = true;
-                    console.log(`** terraform apply failed! retrying (attempt #${retries}/${maxRetries})..`);
-                    yield utilities_1.wait(5000);
+                else {
+                    core.setFailed(`terraform apply failed after ${retries} retries!`);
                 }
-            }
-            if (!failed) {
-                console.log(`Deploy completed in ${retries} retries.`);
-            }
-            else {
-                core.setFailed(`terraform apply failed after ${retries} retries!`);
             }
         }
         catch (error) {
+            core.info(error);
+            console.log(error);
             core.setFailed(error.message);
         }
     });
