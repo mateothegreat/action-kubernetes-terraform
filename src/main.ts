@@ -37,11 +37,11 @@ async function run(): Promise<void> {
 
             }
 
-        core.debug((`//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`);
+        core.debug((`//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`));
             fs.writeFileSync('.npmrc', `//${ core.getInput('npm_registry')}/:_authToken=${ core.getInput('npm_token') }`, { flag: 'w+' });
 
 
-        core.debug(fs.readFileSync('.npmrc'))
+        core.debug(fs.readFileSync('.npmrc').toString())
 
             console.log(1111);
         // }
