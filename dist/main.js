@@ -71,12 +71,13 @@ function run() {
             if (core.getInput('docker_build_args')) {
                 const args = YAML.parse(core.getInput('docker_build_args'));
                 for (let key in args) {
-                    dockerBuildArgs.push(`--build-arg ${key}=${args[key]}`);
+                    dockerBuildArgs.push(`--build-arg "${key}=${args[key]}"`);
                 }
             }
             dockerBuildArgs.push('-t');
             dockerBuildArgs.push(dockerTag);
             dockerBuildArgs.push('.');
+            core.info(dockerBuildArgs.join(' '));
             yield exec.exec('docker', dockerBuildArgs);
             yield exec.exec('docker', ['push', dockerTag]);
             if (core.getInput('terraform_deploy_file')) {
