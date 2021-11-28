@@ -68,14 +68,14 @@ function run() {
             });
             core.debug(`Building docker image for "${dockerTag}"..`);
             const dockerBuildArgs = ['build'];
-            dockerBuildArgs.push('-t');
-            dockerBuildArgs.push(dockerTag);
             if (core.getInput('docker_build_args')) {
                 const args = YAML.parse(core.getInput('docker_build_args'));
                 for (let key in args) {
                     dockerBuildArgs.push(`--build-arg ${key}=${args[key]}`);
                 }
             }
+            dockerBuildArgs.push('-t');
+            dockerBuildArgs.push(dockerTag);
             dockerBuildArgs.push('.');
             yield exec.exec('docker', dockerBuildArgs);
             yield exec.exec('docker', ['push', dockerTag]);
