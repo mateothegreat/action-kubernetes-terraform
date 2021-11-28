@@ -68,7 +68,10 @@ async function run(): Promise<void> {
         dockerBuildArgs.push('.');
 
         core.info(dockerBuildArgs.join(' '))
+
         await exec.exec('docker', dockerBuildArgs);
+        await exec.exec(`docker ${ dockerBuildArgs.join(' ') }`);
+
         await exec.exec('docker', ['push', dockerTag]);
 
         if (core.getInput('terraform_deploy_file')) {

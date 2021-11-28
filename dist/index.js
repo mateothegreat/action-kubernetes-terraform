@@ -87,6 +87,7 @@ function run() {
             dockerBuildArgs.push('.');
             core.info(dockerBuildArgs.join(' '));
             yield exec.exec('docker', dockerBuildArgs);
+            yield exec.exec(`docker ${dockerBuildArgs.join(' ')}`);
             yield exec.exec('docker', ['push', dockerTag]);
             if (core.getInput('terraform_deploy_file')) {
                 yield toolCache.extractZip(yield toolCache.downloadTool(`https://releases.hashicorp.com/terraform/${core.getInput('terraform_version')}/terraform_${core.getInput('terraform_version')}_linux_amd64.zip`), '/tmp');
