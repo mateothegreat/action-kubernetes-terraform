@@ -58,7 +58,7 @@ async function run(): Promise<void> {
             const args = YAML.parse(core.getInput('docker_build_args'));
 
             for (let key in args) {
-                dockerBuildArgs.push(`--build-arg "${key}=${args[key]}"`);
+                dockerBuildArgs.push(`--build-arg="${key}=${args[key]}"`);
             }
         }
 
