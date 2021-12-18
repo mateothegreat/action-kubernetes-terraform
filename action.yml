@@ -26,6 +26,10 @@ inputs:
   terraform_backend_prefix:
     required: true
     description: "terraform backend prefix"
+
+  npmrc:
+    required: false
+    description: "content to add to .npmrc"
   npm_pre:
     required: false
     description: "npm first line"
