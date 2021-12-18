@@ -52,6 +52,10 @@ function run() {
                 core.debug('Writing .npmrc..');
                 fs.writeFileSync('.npmrc', `//${core.getInput('npm_registry')}/:_authToken=${core.getInput('npm_token')}` + '\n', { flag: 'a' });
             }
+            if (core.getInput('npmrc')) {
+                core.debug('Writing .npmrc..');
+                fs.writeFileSync('.npmrc', core.getInput('npmrc'), { flag: 'a' });
+            }
             if (core.getInput('service_account_key')) {
                 fs.writeFileSync('/tmp/terraform-key.json', core.getInput('service_account_key'), { flag: 'w+' });
                 yield exec.exec('gcloud', [
