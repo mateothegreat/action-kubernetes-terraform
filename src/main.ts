@@ -59,6 +59,12 @@ async function run(): Promise<void> {
 
         const dockerBuildArgs = [ 'build' ];
 
+        if (core.getInput('docker_build_no_cache')) {
+
+            dockerBuildArgs.push('--no-cache')
+
+        }
+
         if (core.getInput('docker_build_args')) {
             const args = YAML.parse(core.getInput('docker_build_args'));
 
