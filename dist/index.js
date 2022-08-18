@@ -75,9 +75,9 @@ function run() {
                 ]);
             }
             core.info(`Deploying version "${version}" (${dockerTag})..`);
-            // await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri') ], {
-            //     input: Buffer.from(core.getInput('storage_account_key'))
-            // });
+            yield exec.exec('docker', ['login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri')], {
+                input: Buffer.from(core.getInput('storage_account_key'))
+            });
             yield exec.exec('gcloud', ['auth', 'configure-docker']);
             core.debug(`Building docker image for "${dockerTag}"..`);
             const dockerBuildArgs = ['build'];

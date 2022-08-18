@@ -33,27 +33,36 @@ async function run(): Promise<void> {
         }
 
         if (core.getInput('npmrc')) {
+
             core.debug('Writing .npmrc..');
+
             fs.writeFileSync('.npmrc', core.getInput('npmrc'), { flag: 'a' });
+
         }
 
         if (core.getInput('service_account_key')) {
+
             fs.writeFileSync('/tmp/terraform-key.json', core.getInput('service_account_key'), { flag: 'w+' });
 
             await exec.exec('gcloud', [
+
                 'auth',
                 'activate-service-account',
                 core.getInput('service_account_name'),
                 '--key-file',
                 '/tmp/terraform-key.json'
+
             ]);
+
         }
 
         core.info(`Deploying version "${ version }" (${ dockerTag })..`);
 
-        // await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri') ], {
-        //     input: Buffer.from(core.getInput('storage_account_key'))
-        // });
+        await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri') ], {
+
+            input: Buffer.from(core.getInput('storage_account_key'))
+
+        });
 
         await exec.exec('gcloud', [ 'auth', 'configure-docker' ]);
 
