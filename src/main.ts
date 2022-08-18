@@ -51,9 +51,11 @@ async function run(): Promise<void> {
 
         core.info(`Deploying version "${ version }" (${ dockerTag })..`);
 
-        await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri') ], {
-            input: Buffer.from(core.getInput('storage_account_key'))
-        });
+        // await exec.exec('docker', [ 'login', '-u', '_json_key', '--password-stdin', core.getInput('docker_login_uri') ], {
+        //     input: Buffer.from(core.getInput('storage_account_key'))
+        // });
+
+        await exec.exec('gcloud', [ 'auth', 'configure-docker' ]);
 
         core.debug(`Building docker image for "${ dockerTag }"..`);
 
