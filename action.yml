@@ -52,6 +52,9 @@ inputs:
     required: false
     description: ""
 
+  docker_login_uri:
+    required: true
+    description: "i.e.: grc.io"
   docker_image_base:
     required: false
     description: ""

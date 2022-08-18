@@ -64,8 +64,6 @@ async function run(): Promise<void> {
 
         });
 
-        await exec.exec('gcloud', [ 'auth', 'configure-docker' ]);
-
         core.debug(`Building docker image for "${ dockerTag }"..`);
 
         const dockerBuildArgs = [ 'build' ];
@@ -77,11 +75,15 @@ async function run(): Promise<void> {
         }
 
         if (core.getInput('docker_build_args')) {
+
             const args = YAML.parse(core.getInput('docker_build_args'));
 
             for (let key in args) {
+
                 dockerBuildArgs.push(`--build-arg=${ key }=${ args[ key ] }`);
+
             }
+
         }
 
 
