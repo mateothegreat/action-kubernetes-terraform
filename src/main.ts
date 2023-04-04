@@ -70,7 +70,7 @@ async function run(): Promise<void> {
 
         if (core.getInput('docker_build_no_cache')) {
 
-            dockerBuildArgs.push('--no-cache')
+            dockerBuildArgs.push('--no-cache');
 
         }
 
@@ -97,20 +97,18 @@ async function run(): Promise<void> {
         await exec.exec('docker', [ 'push', dockerTag ]);
 
         if (core.getInput('terraform_deploy_file')) {
-            await toolCache.extractZip(
-                await toolCache.downloadTool(
-                    `https://releases.hashicorp.com/terraform/${ core.getInput(
-                        'terraform_version'
-                    ) }/terraform_${ core.getInput('terraform_version') }_linux_amd64.zip`
-                ),
-                '/tmp'
-            );
+
+            await toolCache.extractZip(await toolCache.downloadTool(`https://releases.hashicorp.com/terraform/${ core.getInput('terraform_version') }/terraform_${ core.getInput('terraform_version') }_linux_amd64.zip`), '/tmp');
 
             await exec.exec('/tmp/terraform', [ 'init' ], {
+
                 env: {
+
                     TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
                     GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
+
                 }
+
             });
 
             const maxRetries = parseInt(core.getInput('terraform_retries')) || 1;
@@ -119,11 +117,12 @@ async function run(): Promise<void> {
             let failed = false;
 
             while (retries <= maxRetries) {
+
                 retries++;
 
                 try {
-                    await exec.exec(
-                        '/tmp/terraform',
+
+                    await exec.exec('/tmp/terraform',
                         [
                             'apply',
                             '-auto-approve',
@@ -133,23 +132,32 @@ async function run(): Promise<void> {
                             `-var=env=${ env }`
                         ],
                         {
+
                             env: {
+
                                 TF_WORKSPACE: core.getInput('terraform_workspace', { required: true }),
                                 GOOGLE_APPLICATION_CREDENTIALS: '/tmp/terraform-key.json'
+
                             }
+
                         }
+
                     );
 
                     failed = false;
 
                     break;
+
                 } catch (err) {
+
                     failed = true;
 
                     core.debug(`** terraform apply failed! retrying (attempt #${ retries }/${ maxRetries })..`);
 
                     await wait(5000);
+
                 }
+
             }
 
             if (!failed) {
